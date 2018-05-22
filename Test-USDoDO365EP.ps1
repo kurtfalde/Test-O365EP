@@ -2,6 +2,9 @@ $TenantName = "M365x126372"
 $clientRequestId = [GUID]::NewGuid().Guid
 
 <#
+See following for more details
+https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638 
+https://support.office.com/en-us/article/managing-office-365-endpoints-99cab9d4-ef59-4207-9f2b-3728eb46bf9a?ui=en-US&rs=en-US&ad=US#ID0EACAAA=4._Web_service
 
 Optimize - for a small number of endpoints that require low latency unimpeded connectivity which should bypass proxy servers, network SSL break and inspect devices, and network hairpins. (Represents about 70% of O365 traffic)
 Allow - for a larger number of endpoints that benefit from low latency unimpeded connectivity. Although not expected to cause failures, we also recommend bypassing proxy servers, network SSL break and inspect devices, and network hairpins. Good connectivity to these endpoints is required for Office 365 to operate normally.
