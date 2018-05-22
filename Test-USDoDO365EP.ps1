@@ -1,4 +1,4 @@
-$TenantName = "TENANTNAME"
+$TenantName = "M365x126372"
 $clientRequestId = [GUID]::NewGuid().Guid
 
 <#
@@ -44,8 +44,9 @@ function Get-InternetProxy
 }
 
 $proxy = Get-InternetProxy
-#MANUALLY SET PROXY SERVER - COMMENT OUT AFTER TESTING
+#MANUALLY SET PROXY SERVER COMMENT AFTER TESTING
 #$proxy = "http://165.227.94.207:8080"
+
 
 
 $epdatas = (Invoke-WebRequest -Uri ("https://endpoints.office.com/endpoints/O365USGovDoD?ClientRequestId=" + $clientRequestId) -Proxy $proxy -ProxyUseDefaultCredentials).content | ConvertFrom-Json
@@ -54,17 +55,18 @@ $epdatas = (Invoke-WebRequest -Uri ("https://endpoints.office.com/endpoints/O365
 #Loop through each ID in the returned data
 foreach ($epdata in $epdatas){
 
-#Test Connection to 
 
-if($epdata.optimizeUrls -ne $null){
+# Loop to test Optimize URLs if they have Optimize TCP Ports
+
+if(($epdata.optimizeUrls -ne $null) -and ($epdata.optimizeTcpPorts -ne $null)){
     $OptimizeUrlPorts = $epdata.optimizeTcpPorts.split(",")
     Foreach($optimizeurlport in $optimizeurlports){
         Foreach($optimizeurl in $epdata.optimizeUrls){
-           If($optimizeurl -match "*"){continue}
+           If($optimizeurl -match "\*"){continue}
            If($optimizeurlport -eq "443"){
             try {
-                Write-host "Testing $optimizeurl $optimizeurlport"
-                $result = Invoke-WebRequest -UseBasicParsing -uri https://$optimizeurl -Proxy $proxy
+                Write-host "Testing Optimize Url $optimizeurl $optimizeurlport via Proxy $proxy"
+                $result = Invoke-WebRequest -UseBasicParsing -uri https://$optimizeurl -Proxy $proxy -ProxyUseDefaultCredentials
                 If($result.StatusCode -eq "200"){write-host "Connected Successfully" $result.StatusCode -ForegroundColor Green}
                 }
             catch {
@@ -80,24 +82,59 @@ if($epdata.optimizeUrls -ne $null){
         }
     }
 
-if($epdata.allowUrls -ne $null){
-    $allowurlports = $epdata.allowTcpPorts.split(",")
+
+# Loop to test Allow URLs if they have Allow TCP Ports
+if(($epdata.allowUrls -ne $null) -and ($epdata.allowTcpPorts -ne $null)){
+    $AllowUrlPorts = $epdata.allowTcpPorts.split(",")
     Foreach($allowurlport in $allowurlports){
         Foreach($allowurl in $epdata.allowUrls){
-            write-host "Allow URLS" $allowurl $allowurlport
+           If($allowurl -match "\*"){continue}
+           If($allowurlport -eq "443"){
+            try {
+                Write-host "Testing Allow Url $allowurl $allowurlport via Proxy $proxy"
+                $result = Invoke-WebRequest -UseBasicParsing -uri https://$allowurl -Proxy $proxy -ProxyUseDefaultCredentials
+                If($result.StatusCode -eq "200"){write-host "Connected Successfully" $result.StatusCode -ForegroundColor Green}
+                }
+            catch {
+                $ErrorMessage = $_.Exception.Message
+                If($ErrorMessage -match "504"){Write-Host "$allowurl $allowurlport $ErrorMessage" -ForegroundColor Red}
+                ElseIf($ErrorMessage -match "400"){Write-Host "$allowurl $allowurlport $ErrorMessage" -ForegroundColor Green}
+                ElseIf($ErrorMessage -match "404"){Write-Host "$allowurl $allowurlport $ErrorMessage" -ForegroundColor Green}
+                Else{Write-Host "$allowurl $allowurlport $ErrorMessage" -ForegroundColor Yellow}
+                }
+
+            }
             }
         }
     }
 
-if($epdata.defaultUrls -ne $null){
-    $defaulturlports = $epdata.defaultTcpPorts.split(",")
+
+# Loop to test Default URLs if they have Allow TCP Ports
+if(($epdata.defaultUrls -ne $null) -and ($epdata.defaultTcpPorts -ne $null)){
+    $defaultUrlPorts = $epdata.defaultTcpPorts.split(",")
     Foreach($defaulturlport in $defaulturlports){
         Foreach($defaulturl in $epdata.defaultUrls){
-            write-host "Default URLS" $defaulturl $defaulturlport
+           If($defaulturl -match "\*"){continue}
+           If($defaulturlport -eq "443"){
+            try {
+                Write-host "Testing Default Url $defaulturl $defaulturlport via Proxy $proxy"
+                $result = Invoke-WebRequest -UseBasicParsing -uri https://$defaulturl -Proxy $proxy -ProxyUseDefaultCredentials
+                If($result.StatusCode -eq "200"){write-host "Connected Successfully" $result.StatusCode -ForegroundColor Green}
+                }
+            catch {
+                $ErrorMessage = $_.Exception.Message
+                If($ErrorMessage -match "504"){Write-Host "$defaulturl $defaulturlport $ErrorMessage" -ForegroundColor Red}
+                ElseIf($ErrorMessage -match "400"){Write-Host "$defaulturl $defaulturlport $ErrorMessage" -ForegroundColor Green}
+                ElseIf($ErrorMessage -match "404"){Write-Host "$defaulturl $defaulturlport $ErrorMessage" -ForegroundColor Green}
+                Else{Write-Host "$defaulturl $defaulturlport $ErrorMessage" -ForegroundColor Yellow}
+                }
+
+            }
             }
         }
     }
 
-#write-host $EPdata.id
+
+
 
 }
