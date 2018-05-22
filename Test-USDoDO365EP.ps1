@@ -78,6 +78,21 @@ if(($epdata.optimizeUrls -ne $null) -and ($epdata.optimizeTcpPorts -ne $null)){
                 }
 
             }
+            If($optimizeurlport -eq "80"){
+            try {
+                Write-host "Testing Optimize Url $optimizeurl $optimizeurlport via Proxy $proxy"
+                $result = Invoke-WebRequest -UseBasicParsing -uri http://$optimizeurl -Proxy $proxy -ProxyUseDefaultCredentials
+                If($result.StatusCode -eq "200"){write-host "Connected Successfully" $result.StatusCode -ForegroundColor Green}
+                }
+            catch {
+                $ErrorMessage = $_.Exception.Message
+                If($ErrorMessage -match "504"){Write-Host "$optimizeurl $optimizeurlport $ErrorMessage" -ForegroundColor Red}
+                ElseIf($ErrorMessage -match "400"){Write-Host "$optimizeurl $optimizeurlport $ErrorMessage" -ForegroundColor Green}
+                ElseIf($ErrorMessage -match "404"){Write-Host "$optimizeurl $optimizeurlport $ErrorMessage" -ForegroundColor Green}
+                Else{Write-Host "$optimizeurl $optimizeurlport $ErrorMessage" -ForegroundColor Yellow}
+                }
+
+            }
             }
         }
     }
@@ -104,6 +119,21 @@ if(($epdata.allowUrls -ne $null) -and ($epdata.allowTcpPorts -ne $null)){
                 }
 
             }
+            If($allowurlport -eq "80"){
+            try {
+                Write-host "Testing Allow Url $allowurl $allowurlport via Proxy $proxy"
+                $result = Invoke-WebRequest -UseBasicParsing -uri http://$allowurl -Proxy $proxy -ProxyUseDefaultCredentials
+                If($result.StatusCode -eq "200"){write-host "Connected Successfully" $result.StatusCode -ForegroundColor Green}
+                }
+            catch {
+                $ErrorMessage = $_.Exception.Message
+                If($ErrorMessage -match "504"){Write-Host "$allowurl $allowurlport $ErrorMessage" -ForegroundColor Red}
+                ElseIf($ErrorMessage -match "400"){Write-Host "$allowurl $allowurlport $ErrorMessage" -ForegroundColor Green}
+                ElseIf($ErrorMessage -match "404"){Write-Host "$allowurl $allowurlport $ErrorMessage" -ForegroundColor Green}
+                Else{Write-Host "$allowurl $allowurlport $ErrorMessage" -ForegroundColor Yellow}
+                }
+
+            }
             }
         }
     }
@@ -119,6 +149,21 @@ if(($epdata.defaultUrls -ne $null) -and ($epdata.defaultTcpPorts -ne $null)){
             try {
                 Write-host "Testing Default Url $defaulturl $defaulturlport via Proxy $proxy"
                 $result = Invoke-WebRequest -UseBasicParsing -uri https://$defaulturl -Proxy $proxy -ProxyUseDefaultCredentials
+                If($result.StatusCode -eq "200"){write-host "Connected Successfully" $result.StatusCode -ForegroundColor Green}
+                }
+            catch {
+                $ErrorMessage = $_.Exception.Message
+                If($ErrorMessage -match "504"){Write-Host "$defaulturl $defaulturlport $ErrorMessage" -ForegroundColor Red}
+                ElseIf($ErrorMessage -match "400"){Write-Host "$defaulturl $defaulturlport $ErrorMessage" -ForegroundColor Green}
+                ElseIf($ErrorMessage -match "404"){Write-Host "$defaulturl $defaulturlport $ErrorMessage" -ForegroundColor Green}
+                Else{Write-Host "$defaulturl $defaulturlport $ErrorMessage" -ForegroundColor Yellow}
+                }
+
+            }
+            If($defaulturlport -eq "80"){
+            try {
+                Write-host "Testing Default Url $defaulturl $defaulturlport via Proxy $proxy"
+                $result = Invoke-WebRequest -UseBasicParsing -uri http://$defaulturl -Proxy $proxy -ProxyUseDefaultCredentials
                 If($result.StatusCode -eq "200"){write-host "Connected Successfully" $result.StatusCode -ForegroundColor Green}
                 }
             catch {
