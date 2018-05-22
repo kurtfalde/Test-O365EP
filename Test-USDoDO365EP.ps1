@@ -1,4 +1,4 @@
-$TenantName = "M365x126372"
+$TenantName = "TENANTNAME"
 $clientRequestId = [GUID]::NewGuid().Guid
 
 <#
@@ -44,8 +44,8 @@ function Get-InternetProxy
 }
 
 $proxy = Get-InternetProxy
-#MANUALLY SET PROXY SERVER COMMENT AFTER TESTING
-$proxy = "http://165.227.94.207:8080"
+#MANUALLY SET PROXY SERVER - COMMENT OUT AFTER TESTING
+#$proxy = "http://165.227.94.207:8080"
 
 
 $epdatas = (Invoke-WebRequest -Uri ("https://endpoints.office.com/endpoints/O365USGovDoD?ClientRequestId=" + $clientRequestId) -Proxy $proxy -ProxyUseDefaultCredentials).content | ConvertFrom-Json
